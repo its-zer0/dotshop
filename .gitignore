@@ -1,0 +1,56 @@
+# Build results
+bin/
+obj/
+[Bb]uild/
+[Ll]ogs/
+.vscode/
+
+# User-specific files
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Visual Studio Code settings
+.vscode/
+
+# ASP.NET generated files
+project.lock.json
+project.fragment.lock.json
+artifacts/
+
+# DotCover, coverage
+*.dotCover
+coverage/
+
+# Others
+*.dbmdl
+*.pdb
+*.cache
+*.log
+
+# Environment files
+.env
+.env.*
+
+# Rider IDE
+.idea/
+*.sln.iml
+
+# Node (if you use frontend tools)
+node_modules/
+dist/
+npm-debug.log
+
+# .NET Core tooling
+*.deps.json
+*.runtimeconfig.json
+
+# Publish outputs
+publish/
+*.publish.xml
+
+# Auto-generated secrets
+secrets.json
+
+./dev-data
