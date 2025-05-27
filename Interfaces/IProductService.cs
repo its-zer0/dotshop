@@ -8,8 +8,8 @@ public interface IProductService
 {
     Task<List<Product>> GetAllProducts();
     // Task<IActionResult> GetProductById(int id);
-    Task<Product> CreateProduct(AddProductRequestDTO addProduct);
+    Task<Product> CreateProduct(Product addProduct);
     Task DeleteProduct(Guid id);
-    Task<ProductResponseDTO> UpdateProduct(Guid id, UpdateProductRequestDTO updateProduct);
+    Task<Product> UpdateProduct(Guid id, Product updateProduct);
 
 }

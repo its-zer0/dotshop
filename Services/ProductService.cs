@@ -18,44 +18,35 @@ public class ProductService : IProductService
     }
     public async Task<List<Product>> GetAllProducts()
     {
-        // Simulate fetching products from a database
-        var products = await _repo.GetAll();
-        // Map the first product in the list to DTO
 
-        return products;
+        return await _repo.GetAll();
+
     }
-    public async Task<Product> CreateProduct(AddProductRequestDTO addProduct)
+    public async Task<Product> CreateProduct(Product product)
     {
-
-        // 1) Map DTO to Domain Model
-        var productDomain = _mapper.Map<Product>(addProduct);
-        productDomain.CreatedAt = DateTime.UtcNow;
-        productDomain.UpdatedAt = DateTime.UtcNow;
-
-        // 2) Call repository to save the product
-        await _repo.Create(productDomain);
-        return productDomain;
+        product.CreatedAt = DateTime.UtcNow;
+        product.UpdatedAt = DateTime.UtcNow;
+        await _repo.Create(product);
+        return product;
     }
     public async Task DeleteProduct(Guid id)
     {
 
         await _repo.Delete(id);
     }
-    public async Task<ProductResponseDTO> UpdateProduct(Guid id, UpdateProductRequestDTO updateProduct)
+    public async Task<Product> UpdateProduct(Guid id, Product product)
     {
-        // 1) Map DTO to Domain Model
-        var productDomain = _mapper.Map<Product>(updateProduct);
-        productDomain.UpdatedAt = DateTime.UtcNow;
 
-        // 2) Call repository to update the product
-        var updatedProduct = await _repo.Update(id, productDomain);
+        product.UpdatedAt = DateTime.UtcNow;
+
+        var updatedProduct = await _repo.Update(id, product);
 
         if (updatedProduct == null)
         {
             throw new KeyNotFoundException("Product not found");
         }
 
-        return _mapper.Map<ProductResponseDTO>(updatedProduct);
+        return updatedProduct;
 
     }
 
