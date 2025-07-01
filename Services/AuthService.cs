@@ -84,4 +84,81 @@ public class AuthService : IAuthService
 
 
     }
+
+    public async Task<AuthResult> ChangePassword(string username, string oldPassword, string newPassword)
+    {
+        var user = await _userManager.FindByNameAsync(username);
+        if (user == null)
+            return new AuthResult
+            {
+                Success = false,
+                Message = "User not found."
+            };
+
+        var res = await _userManager.ChangePasswordAsync(user, oldPassword, newPassword);
+        if (!res.Succeeded)
+            return new AuthResult
+            {
+                Success = false,
+                Message = string.Join("; ", res.Errors.Select(e => e.Description))
+            };
+
+        return new AuthResult
+        {
+            Success = true,
+            Message = "Password changed successfully."
+        };
+
+    }
+
+
+    public async Task<AuthResult> ForgotPassword(string username)
+    {
+        var user = await _userManager.FindByNameAsync(username);
+        if (user == null)
+            return new AuthResult { Success = false, Message = "User not found." };
+
+        var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+
+        return new AuthResult
+        {
+            Success = true,
+            Message = "Password reset token generated.",
+            Token = token ?? "TOken"
+        };
+    }
+    public async Task<AuthResult> ResetPassword(string username, string token, string newPassword)
+    {
+        var user = await _userManager.FindByNameAsync(username);
+        if (user == null)
+            return new AuthResult { Success = true, Message = "If the user exists, a password reset will be processed." };
+
+        var result = await _userManager.ResetPasswordAsync(user, token, newPassword);
+        if (!result.Succeeded)
+            return new AuthResult
+            {
+                Success = false,
+                Message = string.Join("; ", result.Errors.Select(e => e.Description))
+            };
+        return new AuthResult { Success = true, Message = "Password reset successful." };
+    }
+    public async Task<AuthResult> DeleteAccount(string username)
+    {
+        var user = await _userManager.FindByNameAsync(username);
+        if (user == null)
+            return new AuthResult { Success = false, Message = "User not found." };
+        var res = await _userManager.DeleteAsync(user);
+        if (!res.Succeeded) return new AuthResult
+        {
+            Success = false,
+            Message = string.Join("; ", res.Errors.Select(e => e.Description))
+        };
+        return new AuthResult
+        {
+            Success = true,
+            Message = "Account account deleted successfully."
+        };
+    }
+
+
 }

@@ -16,7 +16,10 @@ public class AutoMapperProfiles : Profile
 
         CreateMap<UpdateProductRequestDTO, Product>().ReverseMap();
 
-
+        CreateMap<AddOrderRequestDTO, Order>().ReverseMap();
+        CreateMap<OrderItemDTO, OrderItem>().ReverseMap();
+        CreateMap<Order, OrderResponseDTO>().ReverseMap();
+        CreateMap<OrderItem, OrderItemResponseDTO>().ReverseMap();
 
     }
 }

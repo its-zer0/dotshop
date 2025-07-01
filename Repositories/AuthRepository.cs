@@ -17,8 +17,9 @@ public class AuthRepository : IAuthRepository
     public string CreateJwtToken(IdentityUser user, List<string> roles)
     {
         var claims = new List<Claim>();
-
+        claims.Add(new Claim(ClaimTypes.Name, user.UserName));
         claims.Add(new Claim(ClaimTypes.Email, user.Email));
+        claims.Add(new Claim(ClaimTypes.NameIdentifier, user.Id));
         foreach (var role in roles) claims.Add(new Claim(ClaimTypes.Role, role));
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["JWT:Key"]));
         var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);

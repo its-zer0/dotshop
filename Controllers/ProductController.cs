@@ -11,7 +11,7 @@ namespace DotShop.API.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-[Authorize]
+
 public class ProductController : ControllerBase
 {
     private readonly IProductService _productService;
@@ -25,12 +25,12 @@ public class ProductController : ControllerBase
 
 
     [HttpGet]
-
     public async Task<IActionResult> GetAllProducts()
     {
         var products = await _productService.GetAllProducts();
         return Ok(products);
     }
+
     [HttpPost]
     [Authorize(Roles = "Admin")]
     public async Task<IActionResult> CreateProduct([FromBody] AddProductRequestDTO addProduct)
@@ -46,8 +46,9 @@ public class ProductController : ControllerBase
         return Ok(createdProduct);
         // return CreatedAtAction(nameof(GetAllProducts), new { id = createdProduct.Id }, createdProduct);
     }
-    [Authorize(Roles = "Admin")]
+
     [HttpDelete("{id:guid}")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> DeleteProduct(Guid id)
     {
         if (id == Guid.Empty)
