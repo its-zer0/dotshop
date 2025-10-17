@@ -9,6 +9,7 @@ using System.Text;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
+using DotShop.API.Middleware;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -83,7 +84,7 @@ builder.Services.AddSwaggerGen(options =>
 
 var app = builder.Build();
 
-
+app.UseGlobalExceptionHandler();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {

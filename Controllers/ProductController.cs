@@ -32,7 +32,7 @@ public class ProductController : ControllerBase
     }
 
     [HttpPost]
-    [Authorize(Roles = "Admin")]
+    // [Authorize(Roles = "Admin")]
     public async Task<IActionResult> CreateProduct([FromBody] AddProductRequestDTO addProduct)
     {
         if (addProduct == null)
