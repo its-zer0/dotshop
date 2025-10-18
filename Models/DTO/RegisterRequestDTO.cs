@@ -16,5 +16,5 @@ public class RegisterRequestDTO
     [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
     public string? ConfirmPassword { get; set; }
 
-    public string[] Roles { get; set; } = new string[] { "User" }; // Default role is User
+    public List<string> Roles { get; set; } = new List<string> { "User" }; // Default role is User
 }

@@ -1,64 +1,114 @@
-
-
 using DotShop.API.Data;
 using DotShop.API.Models.Domain;
-using Microsoft.AspNetCore.Mvc;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+using DotShop.Exceptions;
 
 public class ProductRepository : IProductRepository
 {
-    private readonly AppDbContext _context;
+    private readonly AppDbContext _dbContext;
+    private readonly ILogger<ProductRepository> _logger;
 
-    public ProductRepository(AppDbContext dbContext)
+    public ProductRepository(AppDbContext dbContext, ILogger<ProductRepository> logger)
     {
-        this._context = dbContext;
-
+        _dbContext = dbContext;
+        _logger = logger;
     }
 
     public async Task<List<Product>> GetAll()
     {
-        return await _context.Products.ToListAsync();
+        try
+        {
+            return await _dbContext.Products.ToListAsync();
+        }
+        catch (DbUpdateException dbex)
+        {
+            _logger.LogError(dbex, "EF/DB update error while fetching all products.");
+            throw new DataAccessException("Failed to fetch products.", dbex);
+        }
     }
+
     public async Task Create(Product product)
     {
-        _context.Products.Add(product);
-        await _context.SaveChangesAsync();
+        try
+        {
+            await _dbContext.Products.AddAsync(product);
+            await _dbContext.SaveChangesAsync();
+        }
+
+        catch (DbUpdateException dbex)
+        {
+            _logger.LogError(dbex, "EF/DB update error while creating product ({ProductName}).", product?.Name);
+            throw new DataAccessException("Failed to create product.", dbex);
+        }
     }
+
     public async Task Delete(Guid id)
     {
-        var product = await _context.Products.FindAsync(id);
-        if (product != null)
+        try
         {
-            _context.Products.Remove(product);
-            await _context.SaveChangesAsync();
+            var product = await _dbContext.Products.FindAsync(id);
+            if (product == null)
+                throw new ProductNotFoundException(id);
+
+            _dbContext.Products.Remove(product);
+            await _dbContext.SaveChangesAsync();
         }
-        else
+        catch (ProductNotFoundException) // let domain exception flow up
         {
-            throw new KeyNotFoundException("Product not found");
+            throw;
+        }
+
+        catch (DbUpdateException dbex)
+        {
+            _logger.LogError(dbex, "EF/DB update error while deleting product {ProductId}.", id);
+            throw new DataAccessException("Failed to delete product.", dbex);
         }
     }
+
     public async Task<Product> Update(Guid id, Product product)
     {
-        var existingProduct = await _context.Products.FindAsync(id);
-        if (existingProduct != null)
+        try
         {
+            var existingProduct = await _dbContext.Products.FindAsync(id);
+            if (existingProduct == null)
+                throw new ProductNotFoundException(id);
+
             existingProduct.Name = product.Name;
             existingProduct.Description = product.Description;
             existingProduct.Price = product.Price;
             existingProduct.UpdatedAt = DateTime.UtcNow;
 
-            await _context.SaveChangesAsync();
+            await _dbContext.SaveChangesAsync();
             return existingProduct;
         }
-        else
+        catch (ProductNotFoundException) // bubble up
         {
-            throw new KeyNotFoundException("Product not found");
+            throw;
         }
 
+        catch (DbUpdateException dbex)
+        {
+            _logger.LogError(dbex, "EF/DB update error while updating product {ProductId}.", id);
+            throw new DataAccessException("Failed to update product.", dbex);
+        }
     }
 
     public async Task<Product?> GetById(Guid id)
     {
-        return await _context.Products.FindAsync(id);
+        try
+        {
+            var product = await _dbContext.Products.FindAsync(id);
+            if (product == null)
+                throw new ProductNotFoundException(id);
+            return product;
+        }
+
+        catch (DbUpdateException dbex)
+        {
+            _logger.LogError(dbex, "EF/DB update error while fetching product by id {ProductId}.", id);
+            throw new DataAccessException("Failed to fetch product by ID.", dbex);
+        }
     }
 }

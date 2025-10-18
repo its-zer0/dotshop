@@ -6,10 +6,11 @@ namespace DotShop.API.Interfaces;
 
 public interface IProductService
 {
-    Task<List<Product>> GetAllProducts();
+    Task<List<ProductDTO>> GetAllProducts();
     // Task<IActionResult> GetProductById(int id);
-    Task<Product> CreateProduct(Product addProduct);
+    Task<ProductDTO> CreateProduct(CreateProductDTO createProduct);
     Task DeleteProduct(Guid id);
-    Task<Product> UpdateProduct(Guid id, Product updateProduct);
+    Task<ProductDTO> GetById(Guid id);
+    Task<ProductDTO> UpdateProduct(Guid id, ProductDTO updateProduct);
 
 }

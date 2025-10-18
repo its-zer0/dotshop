@@ -1,7 +1,6 @@
 
 using DotShop.API.Data;
 using DotShop.API.Interfaces;
-using DotShop.API.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
