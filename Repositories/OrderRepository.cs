@@ -29,6 +29,12 @@ public class OrderRepository : IOrderRepository
     {
         try
         {
+            //*
+            // Note: I am using eager loading to include order items,
+            // this can help performance by reducing the number of database calls.
+            // (n + 1 problem)
+            //  */
+
             return await _dbContext.Orders
                 .Include(o => o.Items)
                 .Where(o => o.UserId == userId)
